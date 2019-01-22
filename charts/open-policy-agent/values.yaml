@@ -1,0 +1,17 @@
+opa_local_address: http://localhost:8181
+log_level: info
+
+opa:
+  image: openpolicyagent/opa
+  image_tag: 0.10.2
+  image_pull_policy: IfNotPresent
+
+kube_mgmt:
+  image: openpolicyagent/kube-mgmt
+  image_tag: 0.6
+  image_pull_policy: IfNotPresent
+
+kubernetes_policy_controller:
+  image: nikhilbh/kubernetes-policy-controller
+  image_tag: 1.2
+  image_pull_policy: IfNotPresent    

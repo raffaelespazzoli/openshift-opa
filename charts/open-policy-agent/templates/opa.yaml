@@ -1,0 +1,104 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: opa
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: opa-server  
+spec:
+  selector:
+    app: opa
+  ports:
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 8443
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: opa
+  namespace: {{ .Release.Namespace }}
+  name: opa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opa
+  template:
+    metadata:
+      labels:
+        app: opa
+      name: opa
+    spec:
+      containers:
+      # WARNING: OPA is NOT running with an authorization policy configured. This
+      # means that clients can read and write policies in OPA. If you are
+      # deploying OPA in an insecure environment, be sure to configure
+      # authentication and authorization on the daemon. See the Security page for
+      # details: https://www.openpolicyagent.org/docs/security.html.
+      - name: opa
+        image: {{ .Values.opa.image }}:{{ .Values.opa.image_tag }}
+        imagePullPolicy: {{ .Values.opa.image_pull_policy }}
+        args:
+          - "run"
+          - "--server"
+          - --addr={{ .Values.opa_local_address }}
+          - --log-level={{ .Values.log_level }}
+      - name: kube-mgmt
+        image: {{ .Values.kube_mgmt.image }}:{{ .Values.kube_mgmt.image_tag }}
+        imagePullPolicy: {{ .Values.kube_mgmt.image_pull_policy }}
+        args:
+          - "--replicate-cluster=v1/namespaces"
+          - "--replicate=extensions/v1beta1/ingresses"
+          - "--replicate=apps/v1/deployments"
+          - --register-admission-controller=false
+      - name: controller
+        image: {{ .Values.kubernetes_policy_controller.image }}:{{ .Values.kubernetes_policy_controller.image_tag }}
+        imagePullPolicy: {{ .Values.kubernetes_policy_controller.image_pull_policy }}
+        args:
+          - "--addr=https://0.0.0.0:8443"
+          - "--addr=http://127.0.0.1:7925"
+          - --opa-url={{ .Values.opa_local_address }}/v1
+          - --log-level={{ .Values.log_level }}
+          - "--tls-cert-file=/certs/tls.crt"
+          - "--tls-private-key-file=/certs/tls.key"          
+        volumeMounts:
+          - readOnly: true
+            mountPath: /certs
+            name: opa-server       
+      volumes:      
+      - name: opa-server
+        secret:
+          secretName: opa-server           
+# ---
+# kind: ConfigMap
+# apiVersion: v1
+# metadata:
+#   name: opa-default-system-main
+#   namespace: {{ .Release.Namespace }}
+# data:
+#   main: |
+#     package system
+
+#     import data.kubernetes.admission
+
+#     main = {
+#       "apiVersion": "admission.k8s.io/v1beta1",
+#       "kind": "AdmissionReview",
+#       "response": response,
+#     }
+
+#     default response = {"allowed": true}
+
+#     response = {
+#         "allowed": false,
+#         "status": {
+#             "reason": reason,
+#         },
+#     } {
+#         reason = concat(", ", admission.deny)
+#         reason != ""
+#     }

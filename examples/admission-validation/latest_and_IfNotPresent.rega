@@ -1,0 +1,15 @@
+package kubernetes.admission
+
+import data.kubernetes.namespaces
+
+deny[{}
+    "type": "always",
+    "resource": {"kind": Deployment, "namespace": namespace, "name": name},
+    "resolution": {"message": "image pull policy and image tag cannot be repectively IfNotPresent and latest at the same time"},
+    }] {
+    input.request.kind = "Deployment"
+    input.request.operation = "CREATE"
+    container = input.request.object.spec.template.spec.containers[_]
+    container.imagePullPolicy = "IfNotPresent"
+    endswith(container.image,"latest")
+}

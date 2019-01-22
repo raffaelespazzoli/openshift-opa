@@ -1,0 +1,8 @@
+apiVersion: v1
+name: open-policy-agent
+version: 0.0.1
+description: Helm chart to deploy Open Policy Agent
+sources:
+  - https://www.openpolicyagent.org
+engine: gotpl
+

@@ -1,0 +1,43 @@
+kind: ValidatingWebhookConfiguration
+apiVersion: admissionregistration.k8s.io/v1beta1
+metadata:
+  name: opa-validating-webhook
+webhooks:
+  - name: validating-webhook.openpolicyagent.org
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+    clientConfig:
+      caBundle: {{ .Values.caBundle }}
+      service:
+        namespace: {{ .Release.Namespace }}
+        name: opa
+        path: "/v1/admit"
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchLabels:
+        opa-controlled: 'true'       
+---
+kind: MutatingWebhookConfiguration
+apiVersion: admissionregistration.k8s.io/v1beta1
+metadata:
+  name: opa-mutating-webhook
+webhooks:
+  - name: mutating-webhook.openpolicyagent.org
+    rules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["*"]
+    clientConfig:
+      caBundle: {{ .Values.caBundle }}
+      service:
+        namespace: {{ .Release.Namespace }}
+        name: opa
+        path: "/v1/admit" 
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchLabels:
+        opa-controlled: 'true'              
