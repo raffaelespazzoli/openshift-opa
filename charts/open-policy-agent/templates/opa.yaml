@@ -55,6 +55,8 @@ spec:
           - "--replicate=extensions/v1beta1/ingresses"
           - "--replicate=apps/v1/deployments"
           - --register-admission-controller=false
+          - --opa-url={{ .Values.opa_local_address }}/v1
+          - --register-admission-controller=false
       - name: controller
         image: {{ .Values.kubernetes_policy_controller.image }}:{{ .Values.kubernetes_policy_controller.image_tag }}
         imagePullPolicy: {{ .Values.kubernetes_policy_controller.image_pull_policy }}
