@@ -14,7 +14,7 @@ CA_BUNDLE=$(oc get secret $SECRET -n default -o "jsonpath={.data['service-ca\.cr
 Deploy the helm chart:
 ```
 oc new-project opa
-helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log-leve=debug | oc apply -f -
+helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log_level=debug | oc apply -f -
 ```
 ### Enable authorization
 
