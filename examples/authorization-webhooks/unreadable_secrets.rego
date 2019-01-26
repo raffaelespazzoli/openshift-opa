@@ -1,4 +1,5 @@
 package authorization
+import data.k8s.matches
 
 ##############################################################################
 #
@@ -9,12 +10,12 @@ package authorization
 ##############################################################################
 
 deny[{
-	"id": "unreadable secret",
-	"resource": {"kind": "secrets", "namespace": "secret_namespace", "name": name},
-	"resolution": {"message": "Your're not allowed to see secret in the namespace 'secret_namespace'"},
+	"id": "unreadable-secret",
+	"resource": {"kind": "secrets", "namespace": namespace, "name": name},
+	"resolution": {"message": "cluster administrator are not allowed to read secrets in non-administrative namespaces"},
 }] {   
-	input.kind = "SubjectAccessReview"
-    input.spec.group[_] = "developers"
-    input.spec.resourceAttributes.verb = "get"
-	name := input.spec.resourceAttributes.name
+	matches[["secrets", namespace, name, input]]
+	re_match("^(get)$", input.spec.resourceAttributes.verb)
+  re_match("^(cluster-admin)$", input.spec.resourceAttributes.group) 
+	not re_match("^(openshift-*|kube-*)$", namespace)
 }
