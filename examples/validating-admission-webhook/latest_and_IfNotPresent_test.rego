@@ -1,6 +1,6 @@
 package admission
 
-test_deny_admin {
+test_deny_pod {
 	 result := deny[{"id": id, "resource": {"kind": "pods", "namespace": "dummy", "name": "testpod"}, "resolution": resolution}] with data.kubernetes.pods.dummy.testpod as {
     "uid":"0df28fbd-5f5f-11e8-bc74-36e6bb280816",
     "kind":{
