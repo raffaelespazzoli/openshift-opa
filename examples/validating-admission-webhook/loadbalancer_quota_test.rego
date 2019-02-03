@@ -1,109 +1,104 @@
 package admission
 
-test_allow_one {
-	 not deny[{"id": id, "resource": {"kind": "services", "namespace": "external-dns", "name": "external-coredns-coredns"}, "resolution": resolution}] with data.kubernetes.services.["external-dns"].["external-coredns-coredns"] as 
-		{
-			"apiVersion": "v1",
-			"kind": "Service",
-			"metadata": {
-				"annotations": {
-					"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{\"prometheus.io/port\":\"9153\",\"prometheus.io/scrape\":\"true\"},\"labels\":{\"app\":\"coredns\",\"chart\":\"coredns-1.2.4\",\"heritage\":\"Tiller\",\"release\":\"external-coredns\"},\"name\":\"external-coredns-coredns\",\"namespace\":\"external-dns\"},\"spec\":{\"ports\":[{\"port\":53,\"protocol\":\"UDP\",\"targetPort\":8053}],\"selector\":{\"app\":\"coredns\",\"release\":\"external-coredns\"},\"type\":\"LoadBalancer\"}}\n",
-					"prometheus.io/port": "9153",
-					"prometheus.io/scrape": "true"
-				},
-				"creationTimestamp": "2019-01-29T01:24:04Z",
-				"labels": {
-					"app": "coredns",
-					"chart": "coredns-1.2.4",
-					"heritage": "Tiller",
-					"release": "external-coredns"
-				},
-				"name": "external-coredns-coredns",
-				"namespace": "external-dns",
-				"resourceVersion": "32744764",
-				"selfLink": "/api/v1/namespaces/external-dns/services/external-coredns-coredns",
-				"uid": "90fb6411-2364-11e9-8cf3-fa163ea7aaa3"
-			},
-			"spec": {
-				"clusterIP": "172.30.46.222",
-				"externalTrafficPolicy": "Cluster",
-				"ports": [
-					{
-						"nodePort": 32153,
-						"port": 53,
-						"protocol": "UDP",
-						"targetPort": 8053
-					}
-				],
-				"selector": {
-					"app": "coredns",
-					"release": "external-coredns"
-				},
-				"sessionAffinity": "None",
-				"type": "LoadBalancer"
-			},
-			"status": {
-				"loadBalancer": {
-					"ingress": [
-						{
-							"ip": "192.168.99.134"
-						}
-					]
-				}
-			}
-		}
+
+lb_svc1 = {
+    "kind": {
+        "group": "",
+        "kind": "Service",
+        "version": "v1",
+    },
+    "namespace": "myproject",
+    "object": {
+        "metadata": {
+            "creationTimestamp": "2018-10-30T23:30:00Z",
+            "name": "myservice",
+            "namespace": "myproject",
+            "uid": "b82becfa-dc9b-11e8-9aa6-080027ca3112",
+        },
+        "spec": {
+            "clusterIP": "10.97.228.185",
+            "externalTrafficPolicy": "Cluster",
+            "ports": [{
+                "nodePort": 30431,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": 9376,
+            }],
+            "selector": {"app": "MyApp"},
+            "sessionAffinity": "None",
+            "type": "LoadBalancer",
+        },
+        "status": {"loadBalancer": {}},
+    },
+    "oldObject": null,
+    "operation": "CREATE",
+    "resource": {
+        "group": "",
+        "resource": "services",
+        "version": "v1",
+    },
+    "uid": "b82bef5f-dc9b-11e8-9aa6-080027ca3112",
+    "userInfo": {
+        "groups": [
+            "system:masters",
+            "system:authenticated",
+        ],
+        "username": "minikube-user",
+    },
 }
 
-# test_deny_three {
-# 	 not deny[{"id": id, "resource": {"kind": "services", "namespace": "external-dns", "name": "external-coredns-coredns"}, "resolution": resolution}] with data.kubernetes.services.external-dns.external-coredns-coredns as 
-# 		{
-# 			"apiVersion": "v1",
-# 			"kind": "Service",
-# 			"metadata": {
-# 				"annotations": {
-# 					"kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{\"prometheus.io/port\":\"9153\",\"prometheus.io/scrape\":\"true\"},\"labels\":{\"app\":\"coredns\",\"chart\":\"coredns-1.2.4\",\"heritage\":\"Tiller\",\"release\":\"external-coredns\"},\"name\":\"external-coredns-coredns\",\"namespace\":\"external-dns\"},\"spec\":{\"ports\":[{\"port\":53,\"protocol\":\"UDP\",\"targetPort\":8053}],\"selector\":{\"app\":\"coredns\",\"release\":\"external-coredns\"},\"type\":\"LoadBalancer\"}}\n",
-# 					"prometheus.io/port": "9153",
-# 					"prometheus.io/scrape": "true"
-# 				},
-# 				"creationTimestamp": "2019-01-29T01:24:04Z",
-# 				"labels": {
-# 					"app": "coredns",
-# 					"chart": "coredns-1.2.4",
-# 					"heritage": "Tiller",
-# 					"release": "external-coredns"
-# 				},
-# 				"name": "external-coredns-coredns",
-# 				"namespace": "external-dns",
-# 				"resourceVersion": "32744764",
-# 				"selfLink": "/api/v1/namespaces/external-dns/services/external-coredns-coredns",
-# 				"uid": "90fb6411-2364-11e9-8cf3-fa163ea7aaa3"
-# 			},
-# 			"spec": {
-# 				"clusterIP": "172.30.46.222",
-# 				"externalTrafficPolicy": "Cluster",
-# 				"ports": [
-# 					{
-# 						"nodePort": 32153,
-# 						"port": 53,
-# 						"protocol": "UDP",
-# 						"targetPort": 8053
-# 					}
-# 				],
-# 				"selector": {
-# 					"app": "coredns",
-# 					"release": "external-coredns"
-# 				},
-# 				"sessionAffinity": "None",
-# 				"type": "LoadBalancer"
-# 			},
-# 			"status": {
-# 				"loadBalancer": {
-# 					"ingress": [
-# 						{
-# 							"ip": "192.168.99.134"
-# 						}
-# 					]
-# 				}
-# 			}
-# 		}
-# }
+lb_svc2 = {
+    "kind": {
+        "group": "",
+        "kind": "Service",
+        "version": "v1",
+    },
+    "namespace": "myproject",
+    "object": {
+        "metadata": {
+            "creationTimestamp": "2018-10-30T23:30:00Z",
+            "name": "myservice2",
+            "namespace": "myproject",
+            "uid": "b82becfa-dc9b-11e8-9aa6-080027ca3112",
+        },
+        "spec": {
+            "clusterIP": "10.97.228.185",
+            "externalTrafficPolicy": "Cluster",
+            "ports": [{
+                "nodePort": 30431,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": 9376,
+            }],
+            "selector": {"app": "MyApp"},
+            "sessionAffinity": "None",
+            "type": "LoadBalancer",
+        },
+        "status": {"loadBalancer": {}},
+    },
+    "oldObject": null,
+    "operation": "CREATE",
+    "resource": {
+        "group": "",
+        "resource": "services",
+        "version": "v1",
+    },
+    "uid": "b82bef5f-dc9b-11e8-9aa6-080027ca3112",
+    "userInfo": {
+        "groups": [
+            "system:masters",
+            "system:authenticated",
+        ],
+        "username": "minikube-user",
+    },
+}
+
+test_deny_loadbalancer_service2 {
+    count(deny) = 0
+        with data.kubernetes.services.myproject.myservice as lb_svc1
+        with data.kubernetes.services.myproject.myservice2 as lb_svc2
+}
+test_deny_loadbalancer_service3 {
+    result := deny[{"id": id, "resource": {"kind": "services", "namespace": namespace, "name": name}, "resolution": resolution}] with data.kubernetes.services.myproject.myservice as lb_svc1 with data.kubernetes.services.myproject.myservice2 as lb_svc2 with data.kubernetes.services.myproject.myservice3 as lb_svc2
+    result[_].message = "you cannot have more than 2 loadbalancer services in each namespace"
+}
