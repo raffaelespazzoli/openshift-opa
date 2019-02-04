@@ -12,9 +12,9 @@ validate_containers(containers) {
 deny[{
 	"id": "pods-imagepullpolicy-latest",
 	"resource": {"kind": "pods", "namespace": namespace, "name": name},
-	"resolution": {"message": "image pull policy and image tag cannot be repectively IfNotPresent and latest at the same time"},
+	"resolution": {"message": "image pull policy and image tag cannot be respectively IfNotPresent and latest at the same time"},
 }] {
     matches[["pods", namespace, name, matched_workload]]
     containers := matched_workload.object.spec.containers[_]
-	validate_containers(containers)
+    validate_containers(containers)
 }
