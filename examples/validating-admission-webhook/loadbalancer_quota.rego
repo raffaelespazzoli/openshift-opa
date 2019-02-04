@@ -2,12 +2,14 @@
 package admission
 
 import data.k8s.matches
+
 deny[{
 	"id": "loadbalancer-service-quota",
 	"resource": {"kind": "services", "namespace": namespace, "name": name},
 	"resolution": {"message": "you cannot have more than 2 loadbalancer services in each namespace"},
 }] {
-    matches[["services", namespace, any_name, matched_services]]
-    count(matched_services) > 2
-    not re_match("^(openshift-*|kube-*)", namespace)
+    service := data.kubernetes.services[namespace][name]
+    loadbalancers := [s | s := data.kubernetes.services[namespace][_]; s.object.spec.type == "LoadBalancer"]
+    2 < count(loadbalancers)
+
 }
