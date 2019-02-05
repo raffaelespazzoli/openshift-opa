@@ -26,13 +26,13 @@ pod1 = {
    },
    "object":{
       "metadata":{
-         "name":"mysql",
+         "name":"myimage",
          "namespace":"myproject1"
       },
       "spec":{
          "containers":[
             {
-               "image":"mysql:5.7",
+               "image":"myrepo/myimage:v3.2",
                "imagePullPolicy":"IfNotPresent",
                "name":"mysql",
                "resources":{
@@ -147,13 +147,13 @@ pod3 = {
    },
    "object":{
       "metadata":{
-         "name":"mysql",
+         "name":"myimage",
          "namespace":"myproject2"
       },
       "spec":{
          "containers":[
             {
-               "image":"mysql:5.7",
+               "image":"myrepo/myimage:v3.2",
                "imagePullPolicy":"IfNotPresent",
                "name":"mysql",
                "resources":{
@@ -183,5 +183,5 @@ test_deny_software_license {
 
 test_invalid_cmdb_integration {
     result := deny[{"id": id, "resolution": resolution}] with data.kubernetes.pods.myproject1.mysql as pod1 with data.kubernetes.pods.myproject2.couchbase as pod2 with data.kubernetes.pods.myproject2.mysql as pod3
-    result[_].message = "we cannot have more than 500 total cpu core for the workload"
+    result[_].message = "we cannot have more than 500 total cpu core for the myrepo/myimage:v3.2 workload"
 }
