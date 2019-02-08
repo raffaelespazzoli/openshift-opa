@@ -55,7 +55,7 @@ Run the following command to deploy the rule.
 oc create configmap no-ifnotpresent-latest-rule --from-file=./examples/validating-admission-webhook/latest_and_IfNotPresent.rego -n opa
 ```
 
-Once the rule is deployed run the following as an admin
+Once the rule is deployed run the following:
 ```shell
 oc new-project ifnotporesent-latest-opa-test
 oc label ns ifnotporesent-latest-opa-test opa-controlled=true
@@ -80,7 +80,7 @@ Run the following command to deploy the rule.
 oc create configmap loadbalancer-quota-rule --from-file=./examples/validating-admission-webhook/loadbalancer_quota_test.rego -n opa
 ```
 
-Once the rule is deployed run the following as an admin
+Once the rule is deployed run the following:
 
 ```shell
 oc new-project loadbalancer-quota-opa-test
@@ -97,4 +97,35 @@ To clean up run the following:
 ```shell
 oc delete project loadbalancer-quota-opa-test
 oc delete configmap loadbalancer-quota-rule -n opa
+```
+
+## CMDB Integration
+
+Sometimes apps deployed in OpenShift need to be referrable back to a CMDB database. You can do that with label. This rule enforces that the following label are defined:
+
+- cmdb_id
+- emergency_contact
+- tier
+
+Run the following command to deploy the rule.
+
+```shell
+oc create configmap cmdb-integration-rule --from-file=./examples/validating-admission-webhook/cmdb_integration.rego -n opa
+```
+
+Once the rule is deployed run the following:
+
+```shell
+oc new-project cmdb-integration-test
+oc label ns cmdb-integration-test opa-controlled=true
+oc apply -f ./examples/validating-admission-webhook/cmdb_integration_test.yaml -n cmdb-integration-test
+```
+
+you should get an error.
+
+To clean up run the following:
+
+```shell
+oc delete project cmdb-integration-test
+oc delete configmap cmdb-integration-rule -n opa
 ```
