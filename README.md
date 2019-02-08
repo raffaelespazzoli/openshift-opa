@@ -16,8 +16,10 @@ Deploy the helm chart:
 
 ```shell
 oc new-project opa
-helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log_level=debug | oc apply -f -
+helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log_level=debug | oc apply -f  - -n opa
 ```
+
+This configurations will enforce rules only on those namespaces with the following label `opa-controlled=true`. This is done to have a "safe" deployment. You can easiliy customize the helm template to change this rule.
 
 ### Enable authorization
 
@@ -39,17 +41,60 @@ kubernetesMasterConfig:
     - /etc/origin/master/opa-policy-controller.kubeconfig  
 ```
 
-These steps are intentionally left manual because the are significnaly differetn between the 3.x and 4.x version of OCP.
-
-```shell
-oc new-project opa-test
-oc label ns opa-test opa-controlled=true
-```
+These above steps are intentionally left manual because the are significnaly differetn between the 3.x and 4.x version of OCP.
 
 ## Examples
 
 ### no IfnotPresent image pull policy and latest images
 
+This rule will prevent users from deplying images with the IfNotPresent image pull policy and the latest tag in the image.
+
+Run the following command to deploy the rule.
+
 ```shell
-oc create configmap no-ifnotpresent-latest-rule --from-file=./examples/latest_and_IfNotPresent.rego -n opa
+oc create configmap no-ifnotpresent-latest-rule --from-file=./examples/validating-admission-webhook/latest_and_IfNotPresent.rego -n opa
+```
+
+Once the rule is deployed run the following as an admin
+```shell
+oc new-project ifnotporesent-latest-opa-test
+oc label ns ifnotporesent-latest-opa-test opa-controlled=true
+oc apply -f ./examples/validating-admission-webhook/latest_and_IfNotPresent_test.yaml -n ifnotporesent-latest-opa-test
+```
+you should get an error.
+
+To clean up run the following:
+```shell
+oc delete project ifnotporesent-latest-opa-test
+oc delete configmap no-ifnotpresent-latest-rule -n opa
+```
+
+## Quota on LoadBalancer service types
+
+LoadBalancer type services are billable resorces in clud deploymen tso it might be a good idea to put a quota on them.
+In this example the quota is 2 per namespace.
+
+Run the following command to deploy the rule.
+
+```shell
+oc create configmap loadbalancer-quota-rule --from-file=./examples/validating-admission-webhook/loadbalancer_quota_test.rego -n opa
+```
+
+Once the rule is deployed run the following as an admin
+
+```shell
+oc new-project loadbalancer-quota-opa-test
+oc label ns loadbalancer-quota-opa-test opa-controlled=true
+oc apply -f ./examples/validating-admission-webhook/loadbalancer_quota_test1.yaml -n loadbalancer-quota-opa-test
+```
+wait a few minutes for opa to catch up with the cluster status then type:
+```
+oc apply -f ./examples/validating-admission-webhook/loadbalancer_quota_test2.yaml -n loadbalancer-quota-opa-test
+```
+you should get an error.
+
+To clean up run the following:
+```shell
+oc delete project loadbalancer-quota-opa-test
+oc delete configmap loadbalancer-quota-rule -n opa
 ```
