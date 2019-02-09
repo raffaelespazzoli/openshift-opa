@@ -19,7 +19,7 @@ deny[{
     matches[["pods", namespace, name, matched_pod]]
     isCreateOrUpdate(matched_pod)
     isMissingOrFalseAnnotation(matched_pod, no_sa_annotation)
-    p = [{"op": "add", "path": "/spec/automountServiceAccountToken", "value": "false"}]
+    p = [{"op": "add", "path": "/spec/automountServiceAccountToken", "value": false}]
 }
 
 isCreateOrUpdate(obj) {

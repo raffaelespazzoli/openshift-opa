@@ -99,5 +99,5 @@ test_mutation {
     result[_].message = "service account secret not mounted"
     result[_].patches[_].op = "add"
     result[_].patches[_].path = "/spec/automountServiceAccountToken"
-    result[_].patches[_].value = "false"
+    result[_].patches[_].value = false
 }

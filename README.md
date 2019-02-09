@@ -129,3 +129,63 @@ To clean up run the following:
 oc delete project cmdb-integration-test
 oc delete configmap cmdb-integration-rule -n opa
 ```
+
+## Enforcing software license
+
+Sometime software licences can be tied to a measurable dimension. In this case we can write polocies that ensure that we don't go over a specific limit within a cluster (in a way this is a cluster-wide quota).
+In this example we use CPU request and we assume that we have licensed the sofware for 500 cpus.
+
+Run the following command to deploy the rule.
+
+```shell
+oc create configmap software-license-rule --from-file=./examples/validating-admission-webhook/software_license.rego -n opa
+```
+
+Once the rule is deployed run the following:
+
+```shell
+oc new-project software-license-test
+oc label ns software-license-test opa-controlled=true
+oc apply -f ./examples/validating-admission-webhook/software_license_test1.yaml -n software-license-test
+```
+
+wait a few seconds for opa to sync and the type:
+
+```shell
+oc apply -f ./examples/validating-admission-webhook/software_license_test1.yaml -n software-license-test
+```
+
+you should get an error.
+
+To clean up run the following:
+
+```shell
+oc delete project software-license-test
+oc delete configmap software-license-rule -n opa
+```
+
+## Preventing mounting the service account secret
+
+Arguably the service account secret should not be mounted by default. To flip the default behavior we can add an annotation to reuest the service account to be mounted (`requires-service-account-secret`). The we can create a mutating admission rule that will remove the service account secret if the above annotation is not set:
+
+Run the following command to deploy the rule.
+
+```shell
+oc create configmap no-serviceaccount-secret-rule --from-file=./examples/mutating-admission-webhooks/no_serviceaccount_secret.rego -n opa
+```
+
+Once the rule is deployed run the following:
+
+```shell
+oc new-project no-serviceaccount-secret-test
+oc label ns no-serviceaccount-secret-test opa-controlled=true
+oc apply -f ./examples/mutating-admission-webhooks/no_serviceaccount_secret_test.yaml -n no-serviceaccount-secret-test
+```
+
+you should get an error.
+
+To clean up run the following:
+
+```shell
+oc delete project no-serviceaccount-secret-test
+oc delete configmap no-serviceaccount-secret-rule -n opa
