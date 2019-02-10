@@ -115,5 +115,5 @@ test_deny_pod {
     },
     "oldObject":null
 }
-  result[_].message = "image pull policy and image tag cannot be repectively IfNotPresent and latest at the same time"
+  result[_].message = "image pull policy and image tag cannot be respectively IfNotPresent and latest at the same time"
 }
