@@ -1,7 +1,7 @@
 package admission
 
 
-pod1 = {
+software_license_pod1 = {
    "uid":"0df28fbd-5f5f-11e8-bc74-36e6bb280816",
    "kind":{
       "group":"",
@@ -48,7 +48,7 @@ pod1 = {
             },
             {
                "image":"httpd:latest",
-               "imagePullPolicy":"IfNotPresent",
+               "imagePullPolicy": "Always",
                "name":"httpd",
                "resources":{
                   "requests":{
@@ -69,7 +69,7 @@ pod1 = {
    "oldObject":null
 }
 
-pod2 = {
+software_license_pod2 = {
    "uid":"0df28fbd-5f5f-11e8-bc74-36e6bb280816",
    "kind":{
       "group":"",
@@ -122,7 +122,7 @@ pod2 = {
    "oldObject":null
 }
 
-pod3 = {
+software_license_pod3 = {
    "uid":"0df28fbd-5f5f-11e8-bc74-36e6bb280816",
    "kind":{
       "group":"",
@@ -177,11 +177,11 @@ pod3 = {
 
 test_deny_software_license {
     count(deny) = 0
-        with data.kubernetes.pods.myproject1.mysql as pod1
-        with data.kubernetes.pods.myproject2.couchbase as pod2
+        with data.kubernetes.pods.myproject1.mysql as software_license_pod1
+        with data.kubernetes.pods.myproject2.couchbase as software_license_pod2
 }
 
 test_invalid_cmdb_integration {
-    result := deny[{"id": id, "resolution": resolution}] with data.kubernetes.pods.myproject1.mysql as pod1 with data.kubernetes.pods.myproject2.couchbase as pod2 with data.kubernetes.pods.myproject2.mysql as pod3
+    result := deny[{"id": id, "resolution": resolution}] with data.kubernetes.pods.myproject1.mysql as software_license_pod1 with data.kubernetes.pods.myproject2.couchbase as software_license_pod2 with data.kubernetes.pods.myproject2.mysql as software_license_pod3
     result[_].message = "we cannot have more than 500 total cpu core for the myrepo/myimage:v3.2 workload"
 }

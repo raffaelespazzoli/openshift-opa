@@ -1,6 +1,6 @@
 package admission
 
-pod1 = {
+no_service_account_pod1 = {
    "uid":"0df28fbd-5f5f-11e8-bc74-36e6bb280816",
    "kind":{
       "group":"",
@@ -46,7 +46,7 @@ pod1 = {
    "oldObject":null
 }
 
-pod2 = {
+no_service_account_pod2 = {
    "uid":"0df28fbd-5f5f-11e8-bc74-36e6bb280816",
    "kind":{
       "group":"",
@@ -79,7 +79,7 @@ pod2 = {
             {
                "image":"myrepo/myimage:v3.2",
                "imagePullPolicy":"IfNotPresent",
-               "name":"mysql"
+               "name":"myimage"
             },
          ],
          "restartPolicy":"Always",
@@ -91,11 +91,11 @@ pod2 = {
 
 test_non_mutation {
     count(deny) = 0
-        with data.kubernetes.pods.myproject.couchbase as pod1
+        with data.kubernetes.pods.myproject.couchbase as no_service_account_pod1
 }
 
 test_mutation {
-    result := deny[{"id": id, "resource": {"kind": "pods", "namespace": namespace, "name": name}, "resolution": resolution}] with data.kubernetes.pods.myproject.mysql as pod2 
+    result := deny[{"id": id, "resource": {"kind": "pods", "namespace": namespace, "name": name}, "resolution": resolution}] with data.kubernetes.pods.myproject.mysql as no_service_account_pod2
     result[_].message = "service account secret not mounted"
     result[_].patches[_].op = "add"
     result[_].patches[_].path = "/spec/automountServiceAccountToken"
