@@ -9,7 +9,11 @@ deny[{
 	"resolution": {"message": "you cannot have more than 2 loadbalancer services in each namespace"},
 }] {
     service := data.kubernetes.services[namespace][name]
-    loadbalancers := [s | s := data.kubernetes.services[namespace][_]; s.object.spec.type == "LoadBalancer"]
-    2 < count(loadbalancers)
+
+    # Verify current object is a LoadBalancer Service
+    service["object"]["spec"]["type"] == "LoadBalancer"
+ 
+    loadbalancers := [s | s := data.kubernetes.services[namespace][_]; s.spec.type == "LoadBalancer"]
+    count(loadbalancers) >= 2
 
 }
