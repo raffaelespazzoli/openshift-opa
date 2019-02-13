@@ -33,7 +33,8 @@ kubernetesMasterConfig:
 ...
   apiServerArguments:
 ...
-    authorization-mode:
+    authorization-mooc new-project opa
+helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log_level=debug | oc apply -f  - -n opade:
     - Node
     - Webhook
     - RBAC
@@ -56,14 +57,17 @@ oc create configmap no-ifnotpresent-latest-rule --from-file=./examples/validatin
 ```
 
 Once the rule is deployed run the following:
+
 ```shell
 oc new-project ifnotporesent-latest-opa-test
 oc label ns ifnotporesent-latest-opa-test opa-controlled=true
 oc apply -f ./examples/validating-admission-webhook/latest_and_IfNotPresent_test.yaml -n ifnotporesent-latest-opa-test
 ```
+
 you should get an error.
 
 To clean up run the following:
+
 ```shell
 oc delete project ifnotporesent-latest-opa-test
 oc delete configmap no-ifnotpresent-latest-rule -n opa
@@ -77,7 +81,7 @@ In this example the quota is 2 per namespace.
 Run the following command to deploy the rule.
 
 ```shell
-oc create configmap loadbalancer-quota-rule --from-file=./examples/validating-admission-webhook/loadbalancer_quota_test.rego -n opa
+oc create configmap loadbalancer-quota-rule --from-file=./examples/validating-admission-webhook/loadbalancer_quota.rego -n opa
 ```
 
 Once the rule is deployed run the following:
@@ -87,13 +91,17 @@ oc new-project loadbalancer-quota-opa-test
 oc label ns loadbalancer-quota-opa-test opa-controlled=true
 oc apply -f ./examples/validating-admission-webhook/loadbalancer_quota_test1.yaml -n loadbalancer-quota-opa-test
 ```
-wait a few minutes for opa to catch up with the cluster status then type:
-```
+
+wait a few seconds for opa to catch up with the cluster status then type:
+
+```shell
 oc apply -f ./examples/validating-admission-webhook/loadbalancer_quota_test2.yaml -n loadbalancer-quota-opa-test
 ```
+
 you should get an error.
 
 To clean up run the following:
+
 ```shell
 oc delete project loadbalancer-quota-opa-test
 oc delete configmap loadbalancer-quota-rule -n opa
@@ -152,7 +160,7 @@ oc apply -f ./examples/validating-admission-webhook/software_license_test1.yaml 
 wait a few seconds for opa to sync and the type:
 
 ```shell
-oc apply -f ./examples/validating-admission-webhook/software_license_test1.yaml -n software-license-test
+oc apply -f ./examples/validating-admission-webhook/software_license_test2.yaml -n software-license-test
 ```
 
 you should get an error.
@@ -182,7 +190,13 @@ oc label ns no-serviceaccount-secret-test opa-controlled=true
 oc apply -f ./examples/mutating-admission-webhooks/no_serviceaccount_secret_test.yaml -n no-serviceaccount-secret-test
 ```
 
-you should get an error.
+check that the pod did not mount a volume:
+
+```shell
+oc get pod busybox -n no-serviceaccount-secret-test -o yaml | grep -A 4 volumeMount
+```
+
+The output should be empty.
 
 To clean up run the following:
 
