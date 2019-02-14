@@ -9,11 +9,15 @@ default licensed_image = "myrepo/myimage:v3.2"
 
 deny[{
 	"id": "software-license",
+	"resource": {"kind": "pods", "namespace": namespace, "name": name},
 	"resolution": {"message": sprintf("we cannot have more than %v total cpu core for the %v workload", [max_cpu_requests, licensed_image])},
 }] {
+     pod := data.kubernetes.pods[namespace][name]
+     existing_containers := [c | c := data.kubernetes.pods[_][_].spec.containers[_]; c.image == licensed_image]
      containers := [c | c := data.kubernetes.pods[_][_].object.spec.containers[_]; c.image == licensed_image]
-     container_millicore_requests := [s | num := containers[_]; s = process_millicore_cpu(num.resources.requests.cpu) ]
-     container_core_requests := [s | num := containers[_]; s = process_core_cpu(num.resources.requests.cpu) ]
+     array.concat(existing_containers, containers, total_containers)
+     container_millicore_requests := [s | num := total_containers[_]; s = process_millicore_cpu(num.resources.requests.cpu) ]
+     container_core_requests := [s | num := total_containers[_]; s = process_core_cpu(num.resources.requests.cpu) ]
      total_requests := sum(container_millicore_requests) + sum(container_core_requests)
      total_requests > max_cpu_requests
 }
