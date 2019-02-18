@@ -4,7 +4,22 @@
 
 Instructions to deploy on OpenShift:
 
-Indetify the value of the openshift service caBundle.
+add the following fragment to your `master-config.yaml` file at the section admissionConfig->pluginConfig :
+
+```yaml
+    MutatingAdmissionWebhook:
+      configuration:
+        apiVersion: apiserver.config.k8s.io/v1alpha1
+        kind: WebhookAdmission
+        kubeConfigFile: /dev/null
+    ValidatingAdmissionWebhook:
+      configuration:
+        apiVersion: apiserver.config.k8s.io/v1alpha1
+        kind: WebhookAdmission
+        kubeConfigFile: /dev/null
+```
+
+Indentify the value of the OpenShift service caBundle.
 One way to do is to run:
 
 ```shell
