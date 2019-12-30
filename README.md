@@ -74,9 +74,9 @@ oc create configmap no-ifnotpresent-latest-rule --from-file=./examples/validatin
 Once the rule is deployed run the following:
 
 ```shell
-oc new-project ifnotporesent-latest-opa-test
-oc label ns ifnotporesent-latest-opa-test opa-controlled=true
-oc apply -f ./examples/validating-admission-webhook/latest_and_IfNotPresent_test.yaml -n ifnotporesent-latest-opa-test
+oc new-project ifnotpresent-latest-opa-test
+oc label ns ifnotpresent-latest-opa-test opa-controlled=true
+oc apply -f ./examples/validating-admission-webhook/latest_and_IfNotPresent_test.yaml -n ifnotpresent-latest-opa-test
 ```
 
 you should get an error.
@@ -84,7 +84,7 @@ you should get an error.
 To clean up run the following:
 
 ```shell
-oc delete project ifnotporesent-latest-opa-test
+oc delete project ifnotpresent-latest-opa-test
 oc delete configmap no-ifnotpresent-latest-rule -n opa
 ```
 
