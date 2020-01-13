@@ -47,12 +47,6 @@ If you want to enable authorization, you need to do the following:
 kubernetesMasterConfig:
 ...
   apiServerArguments:
-...
-    authorization-mooc new-project opa
-helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log_level=debug | oc apply -f  - -n opade:
-    - Node
-    - Webhook
-    - RBAC
     authorization-webhook-config-file:
     - /etc/origin/master/opa-policy-controller.kubeconfig  
 ```
