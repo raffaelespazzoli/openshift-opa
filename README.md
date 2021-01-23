@@ -4,7 +4,7 @@
 
 Instructions to deploy on OpenShift:
 
-add the following fragment to your `master-config.yaml` file at the section admissionConfig->pluginConfig :
+Add the following fragment to your `master-config.yaml` file at the section admissionConfig->pluginConfig :
 
 ```yaml
     MutatingAdmissionWebhook:
@@ -19,7 +19,7 @@ add the following fragment to your `master-config.yaml` file at the section admi
         kubeConfigFile: /dev/null
 ```
 
-Indentify the value of the OpenShift service caBundle.
+Identify the value of the OpenShift service caBundle.
 One way to do is to run:
 
 ```shell
@@ -34,7 +34,7 @@ oc new-project opa
 helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy_controller.image_tag=2.0 --set kubernetes_policy_controller.image=quay.io/raffaelespazzoli/kubernetes-policy-controller --set caBundle=$CA_BUNDLE --set log_level=debug | oc apply -f  - -n opa
 ```
 
-This configurations will enforce rules only on those namespaces with the following label `opa-controlled=true`. This is done to have a "safe" deployment. You can easiliy customize the helm template to change this rule.
+This configuration will enforce rules only on those namespaces with the following label `opa-controlled=true`. This is done to have a "safe" deployment. You can easily customize the helm template to change this rule.
 
 ### Enable authorization
 
@@ -57,13 +57,13 @@ helm template ./charts/open-policy-agent --namespace opa --set kubernetes_policy
     - /etc/origin/master/opa-policy-controller.kubeconfig  
 ```
 
-These above steps are intentionally left manual because the are significnaly differetn between the 3.x and 4.x version of OCP.
+These above steps are intentionally left manual because the are significantly different between the 3.x and 4.x version of OCP.
 
 ## Examples
 
 ### no IfnotPresent image pull policy and latest images
 
-This rule will prevent users from deplying images with the IfNotPresent image pull policy and the latest tag in the image.
+This rule will prevent users from deploying images with the IfNotPresent image pull policy and the latest tag in the image.
 
 Run the following command to deploy the rule.
 
@@ -74,9 +74,9 @@ oc create configmap no-ifnotpresent-latest-rule --from-file=./examples/validatin
 Once the rule is deployed run the following:
 
 ```shell
-oc new-project ifnotporesent-latest-opa-test
-oc label ns ifnotporesent-latest-opa-test opa-controlled=true
-oc apply -f ./examples/validating-admission-webhook/latest_and_IfNotPresent_test.yaml -n ifnotporesent-latest-opa-test
+oc new-project ifnotpresent-latest-opa-test
+oc label ns ifnotpresent-latest-opa-test opa-controlled=true
+oc apply -f ./examples/validating-admission-webhook/latest_and_IfNotPresent_test.yaml -n ifnotpresent-latest-opa-test
 ```
 
 you should get an error.
@@ -84,13 +84,13 @@ you should get an error.
 To clean up run the following:
 
 ```shell
-oc delete project ifnotporesent-latest-opa-test
+oc delete project ifnotpresent-latest-opa-test
 oc delete configmap no-ifnotpresent-latest-rule -n opa
 ```
 
 ## Quota on LoadBalancer service types
 
-LoadBalancer type services are billable resorces in clud deploymen tso it might be a good idea to put a quota on them.
+LoadBalancer type services are billable ressources in cloud deployment so it might be a good idea to put a quota on them.
 In this example the quota is 2 per namespace.
 
 Run the following command to deploy the rule.
@@ -124,7 +124,7 @@ oc delete configmap loadbalancer-quota-rule -n opa
 
 ## CMDB Integration
 
-Sometimes apps deployed in OpenShift need to be referrable back to a CMDB database. You can do that with label. This rule enforces that the following label are defined:
+Sometimes apps deployed in OpenShift need to be referrable back to a CMDB database. You can do that with label. This rule enforces that the following labels are defined:
 
 - cmdb_id
 - emergency_contact
@@ -155,7 +155,7 @@ oc delete configmap cmdb-integration-rule -n opa
 
 ## Enforcing software license
 
-Sometime software licences can be tied to a measurable dimension. In this case we can write polocies that ensure that we don't go over a specific limit within a cluster (in a way this is a cluster-wide quota).
+Sometimes software licences can be tied to a measurable dimension. In this case we can write policies that ensure that we don't go over a specific limit within a cluster (in a way this is a cluster-wide quota).
 In this example we use CPU request and we assume that we have licensed the sofware for 500 cpus.
 
 Run the following command to deploy the rule.
@@ -189,7 +189,7 @@ oc delete configmap software-license-rule -n opa
 
 ## Preventing mounting the service account secret
 
-Arguably the service account secret should not be mounted by default. To flip the default behavior we can add an annotation to reuest the service account to be mounted (`requires-service-account-secret`). The we can create a mutating admission rule that will remove the service account secret if the above annotation is not set:
+Arguably the service account secret should not be mounted by default. To flip the default behavior we can add an annotation to request the service account to be mounted (`requires-service-account-secret`). Then we can create a mutating admission rule that will remove the service account secret if the above annotation is not set:
 
 Run the following command to deploy the rule.
 
